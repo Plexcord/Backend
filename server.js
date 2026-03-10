@@ -161,6 +161,30 @@ app.delete("/v1", async (req, res) => {
   }
 });
 
+app.get("/quoter", (req, res) => {
+
+  res.json([
+
+    "506074187014602752",
+
+    "1120045713867423835",
+
+    "1207087393929171095",
+
+    "825069530376044594",
+
+    "921098159348924457",
+
+    "929208515883569182"
+
+  ]);
+
+});
+
+
+
+
+
 app.delete("/v1/settings", async (req, res) => {
   const authHeader = req.headers["authorization"];
   if (!authHeader) {
@@ -248,7 +272,7 @@ app.put("/v1/settings", async (req, res) => {
 });
 
 app.get("/", (req, res) => {
-  res.send("");
+  res.redirect("https://plexcord.club/cloud");
 });
 
 app.get("/gdpr", (req, res) => {
