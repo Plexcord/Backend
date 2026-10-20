@@ -1,7 +1,8 @@
 {
-  "name": "backend",
-  "version": "0.0.1",
-  "description": "Plexcord api server",
+  "name": "api.plexcord.club",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Plexcord Cloud API: settings sync for the Plexcord client mod",
   "homepage": "https://github.com/Plexcord/Backend#readme",
   "bugs": {
     "url": "https://github.com/Plexcord/Backend/issues"
@@ -12,16 +13,27 @@
   },
   "license": "AGPL-3.0",
   "author": "MutanPlex",
-  "type": "commonjs",
-  "main": "server.js",
   "scripts": {
-    "test": "node server.js"
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "postinstall": "prisma generate",
+    "test": "node --test src/lib/cloud.test.mjs",
+    "import-json": "tsx scripts/import-json.mts"
   },
   "dependencies": {
-    "axios": "^1.8.1",
-    "body-parser": "^1.20.3",
-    "dotenv": "^16.4.7",
-    "express": "^4.21.2",
-    "https": "^1.0.0"
+    "@prisma/adapter-mariadb": "^7.10.1",
+    "@prisma/client": "^7.10.1",
+    "next": "16.4.2",
+    "react": "19.3.0",
+    "react-dom": "19.3.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "dotenv": "^18.0.8",
+    "prisma": "^7.10.1",
+    "tsx": "^4.23.15",
+    "typescript": "^5"
   }
 }
