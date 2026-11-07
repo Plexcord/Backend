@@ -13,7 +13,7 @@ const exists = (file: string) => fs.existsSync(path.join(dir, file));
 const users: Record<string, { hash?: string }> = exists("data/users.json") ? readJson("data/users.json") : {};
 const files = exists("settings") ? fs.readdirSync(path.join(dir, "settings")) : [];
 const ids = new Set(
-  [...Object.keys(users), ...files.map((f) => f.split(".")[0])].filter((id) => /^\d{17,20}$/.test(id))
+  [...Object.keys(users), ...    files.map((f: string) => f.split(".")[0])].filter((id) => /^\d{17,20}$/.test(id))
 );
 
 let entries = 0;

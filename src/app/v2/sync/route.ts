@@ -1,10 +1,15 @@
 import type { NextRequest } from "next/server";
 import { MAX_USER_BYTES, pickDownloads, readBody, V1_KEY, validateUploads, type ManifestEntry } from "@/lib/cloud";
 import { authenticate, prisma, unauthorized } from "@/lib/db";
+import { rateLimit } from "@/lib/rateLimit";
 
 class QuotaExceeded extends Error {}
 
 export async function POST(req: NextRequest) {
+  const ip = req.headers.get("x-forwarded-for") ?? req.headers.get("x-real-ip") ?? "unknown";
+  const limit = rateLimit(`sync:${ip}`, 30, 60000);
+  if (!limit.allowed) return Response.json({ error: "Too many requests" }, { status: 429 });
+
   const userId = await authenticate(req);
   if (!userId) return unauthorized();
 
@@ -28,7 +33,7 @@ export async function POST(req: NextRequest) {
 
   if (rows.length) {
     try {
-      uploaded = await prisma.$transaction(async (tx) => {
+      uploaded = await prisma.$transaction(async (tx: any) => {
         const results = [];
         // last write wins
         for (const { key, value, checksum } of rows) {
@@ -70,7 +75,7 @@ export async function POST(req: NextRequest) {
 
   return Response.json({
     server_manifest: serverManifest,
-    downloads: downloads.map((d) => ({ ...d, value: Buffer.from(d.value).toString("base64") })),
+    downloads: downloads.map((d: any) => ({ ...d, value: Buffer.from(d.value).toString("base64") })),
     uploaded,
     errors,
   });

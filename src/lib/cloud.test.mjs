@@ -2,7 +2,7 @@
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
 import { test } from "node:test";
-import { checksum, hashSecret, parseAuthorization, pickDownloads, secretMatches, validateUploads } from "./cloud.ts";
+import { checksum, hashSecret, parseAuthorization, pickDownloads, secretMatches, validateUploads } from "./cloud";
 
 const id = "123456789012345678";
 const auth = (s) => Buffer.from(s).toString("base64");
