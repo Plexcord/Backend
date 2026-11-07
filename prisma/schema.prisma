@@ -1,0 +1,32 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+// A Discord user who linked Plexcord Cloud. Deleting one deletes all their data.
+model CloudUser {
+  id         String       @id @db.VarChar(20) // Discord user ID
+  // SHA-256 of the secret handed to the client. Null for users imported from the old
+  // JSON storage until they link again.
+  secretHash String?      @db.Char(64)
+  createdAt  DateTime     @default(now())
+  entries    CloudEntry[]
+}
+
+// One synced blob per user and key ("settings", "quickCss", "dataStore", "dataStore/<x>").
+// v1 clients keep their single deflated export under the key "v1".
+model CloudEntry {
+  userId    String    @db.VarChar(20)
+  key       String    @db.VarChar(256)
+  value     Bytes     @db.LongBlob
+  version   Int
+  checksum  String    @db.Char(16) // first 8 bytes of SHA-256, hex, same as the client
+  updatedAt DateTime  @updatedAt // v1 ETag
+  user      CloudUser @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([userId, key])
+}

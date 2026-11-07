@@ -1,0 +1,38 @@
+# systemd unit for the Plexcord Cloud API.
+# Install: sudo cp deploy/api-plexcord-club.service /etc/systemd/system/
+#          sudo systemctl daemon-reload && sudo systemctl enable --now api-plexcord-club
+# Replace youruser and the paths below with your own.
+
+[Unit]
+Description=Plexcord Cloud API (Next.js)
+After=network-online.target mysql.service mariadb.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=youruser
+Group=youruser
+WorkingDirectory=/home/youruser/web/api.plexcord.club/project
+# Next.js reads .env from WorkingDirectory itself.
+Environment=NODE_ENV=production
+# Run node directly: a package manager in between can stop to ask questions and never start the app.
+# Bind to localhost only; nginx is the public entry point.
+ExecStart=/usr/bin/env node node_modules/next/dist/bin/next start -H 127.0.0.1 -p 9876
+Restart=on-failure
+RestartSec=5
+
+# Hardening: read-only system and home, except the build cache. All data lives in the database.
+NoNewPrivileges=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectSystem=strict
+ProtectHome=read-only
+ReadWritePaths=/home/youruser/web/api.plexcord.club/project/.next
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+LockPersonality=true
+
+[Install]
+WantedBy=multi-user.target
